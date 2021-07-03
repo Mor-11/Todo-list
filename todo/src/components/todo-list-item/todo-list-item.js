@@ -5,6 +5,7 @@ import "./todo-list-item.css";
 export default class TodoListItem extends Component {
   state = {
     done: false,
+    important: false,
   };
 
   onLadelClick = () => {
@@ -13,33 +14,35 @@ export default class TodoListItem extends Component {
     });
   };
 
+  onMarkImportant = () => {
+    this.setState({
+      important: true,
+    });
+  };
+
   render() {
-    const { label, important = false } = this.props;
-    const { done } = this.state;
+    const { label } = this.props;
+    const { done, important } = this.state;
 
     let className = "todo-list-item";
     if (done) {
       className += " done";
     }
 
-    const style = {
-      color: important ? "steelblue" : "black",
-      fontWeight: important ? "bold" : "normal",
-    };
+    if (important) {
+      className += " important";
+    }
 
     return (
       <span className={className}>
-        <span
-          className="todo-list-item-label"
-          style={style}
-          onClick={this.onLadelClick}
-        >
+        <span className="todo-list-item-label" onClick={this.onLadelClick}>
           {label}
         </span>
 
         <button
           type="button"
           className="btn btn-outline-success btn-sm float-right"
+          onClick={this.onMarkImportant}
         >
           <i className="fa fa-exclamation" />
         </button>
