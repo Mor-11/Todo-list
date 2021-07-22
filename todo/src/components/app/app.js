@@ -52,32 +52,45 @@ export default class App extends Component {
     });
   };
 
+  togglePreperty = (arr, id, propName) => {
+    const idx = arr.findIndex((el) => el.id === id);
+    const oldItem = arr[idx];
+    const newItem = { ...oldItem, [propName]: !oldItem[propName] };
+    return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)];
+  };
+
   onTiggleImpontant = (id) => {
     this.setState(({ todoData }) => {
-      const idx = todoData.findIndex((el) => el.id === id);
-      const oldItem = todoData[idx];
-      const newItem = { ...oldItem, done: !oldItem.import };
+      return {
+        todoData: this.togglePreperty(todoData, id , 'important' ),
+      };
     });
   };
 
   onToggleDone = (id) => {
     this.setState(({ todoData }) => {
-      const idx = todoData.findIndex((el) => el.id === id);
-      const oldItem = todoData[idx];
-      const newItem = { ...oldItem, done: !oldItem.done };
+      return {
+        todoData: this.togglePreperty(todoData, id , 'done' ),
+      };
     });
   };
 
   render() {
+    const { todoData } = this.state;
+
+    const doneCount = todoData.filter((el) => el.done).length;
+
+    const todoCount = todoData.length - doneCount;
+
     return (
       <div className="todo-app">
-        <AppHeader toDo={1} done={3} />
+        <AppHeader toDo={todoCount} done={doneCount} />
         <div className="top-panel d-flex">
           <SearchPanel />
           <ItemStatusFilter />
         </div>
         <TodoList
-          todos={this.state.todoData}
+          todos={todoData}
           onDeleted={this.deleteItem}
           onTiggleImpontant={this.onTiggleImpontant}
           onToggleDone={this.onToggleDone}
