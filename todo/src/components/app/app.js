@@ -17,6 +17,8 @@ export default class App extends Component {
       this.createTodoItem("Make Awesome App"),
       this.createTodoItem("Havea lunch"),
     ],
+    coincidence: "",
+    filter: "all",
   };
 
   createTodoItem(label) {
@@ -62,7 +64,7 @@ export default class App extends Component {
   onTiggleImpontant = (id) => {
     this.setState(({ todoData }) => {
       return {
-        todoData: this.togglePreperty(todoData, id , 'important' ),
+        todoData: this.togglePreperty(todoData, id, "important"),
       };
     });
   };
@@ -70,13 +72,46 @@ export default class App extends Component {
   onToggleDone = (id) => {
     this.setState(({ todoData }) => {
       return {
-        todoData: this.togglePreperty(todoData, id , 'done' ),
+        todoData: this.togglePreperty(todoData, id, "done"),
       };
     });
   };
 
+  onLabelChange = (coincidence) => {
+    this.setState({ coincidence });
+  };
+
+  onFilterChange = (filter) => {
+    this.setState({ filter });
+  };
+
+  search = (items, coincidence) => {
+    if (coincidence === "") return items;
+    return items.filter((text) => {
+      return text.label.toLowerCase().indexOf(coincidence.toLowerCase()) > -1;
+    });
+  };
+
+  filter = (items, filter) => {
+    if (filter === "all") return items;
+    if (filter === "active")
+      return items.filter((todo) => {
+        return todo.done === false;
+      });
+    if (filter === "done")
+      return items.filter((todo) => {
+        return todo.done === true;
+      });
+    else return items;
+  };
+
   render() {
-    const { todoData } = this.state;
+    const { todoData, coincidence, filter } = this.state;
+
+    const visibleItems = this.filter(
+      this.search(todoData, coincidence),
+      filter
+    );
 
     const doneCount = todoData.filter((el) => el.done).length;
 
@@ -86,11 +121,14 @@ export default class App extends Component {
       <div className="todo-app">
         <AppHeader toDo={todoCount} done={doneCount} />
         <div className="top-panel d-flex">
-          <SearchPanel />
-          <ItemStatusFilter />
+          <SearchPanel onLabelChange={this.onLabelChange} />
+          <ItemStatusFilter
+            filter={filter}
+            onFilterChange={this.onFilterChange}
+          />
         </div>
         <TodoList
-          todos={todoData}
+          todos={visibleItems}
           onDeleted={this.deleteItem}
           onTiggleImpontant={this.onTiggleImpontant}
           onToggleDone={this.onToggleDone}
